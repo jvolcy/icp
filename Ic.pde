@@ -92,9 +92,9 @@ public class Ic
   object itself as the value.  Using this arrangement, we can get a 
   reference to a POI by simply looking it up by ID# in the dictionary.
   ====================================================================== */
-  public void addPoi(long colorID, String name, String baseFileName, Vect2 marker)
+  public void addPoi(long colorID, String name, String baseFileName)
   {
-    POIs.put(colorID, new Poi(colorID, name, baseFileName, marker));
+    POIs.put(colorID, new Poi(colorID, name, baseFileName, null));
   }
   
   /* ======================================================================
@@ -177,7 +177,11 @@ public class Ic
       {
         distance2 = (i-x)*(i-x) + (j-y)*(j-y);
         if(distance2 < radius * radius)
-          img.pixels[j*img.width+i] = clr;
+        {
+          int index = j*img.width+i;
+          if (index < 0) index = 0;
+          img.pixels[index] = clr;
+        }
       }
   }
   

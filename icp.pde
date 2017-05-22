@@ -59,8 +59,12 @@ static public class POI_CLR_ID
   static long LEE_ST           = (long)(#602224);  // Lee St
   static long WEST_END_AVE     = (long)(#534dc5);  // West End Ave
   static long CHAPEL_ST        = (long)(#ff82c4);  // Chapel St
-  //static long WAR_GARDEN       = (long)();
-  //static long PACKARD_GARDEN   = (long)();
+  static long WAR_GARDEN       = (long)(#d26798);  // War Garden
+  static long PACKARD_GARDEN   = (long)(#0d6798);  // Mary J. Packard Garden
+  static long TENNIS_COURTS    = (long)(#6400a6);  // Tennis Courts
+  static long NEW_OVAL         = (long)(#ffb800);  // The New Oval
+  static long AMPHITHEATER     = (long)(#644b0f);  // Amphitheater
+  static long PARK             = (long)(#442525);  // The Park!!!
 }
 
 
@@ -107,45 +111,51 @@ public void setup()
   frame_period_ms = 1000.0/frameRate;
 
   /* Add POIs to the Ic object */
-  ic.addPoi(POI_CLR_ID.MOREHOUSE_DECK, "Morehouse Deck", "MOREHOUSE_DECK", null);
-  ic.addPoi(POI_CLR_ID.ABBY_ALDRICH, "Abby Aldrich Rockefeller Hall", "ABBY_ALDRICH", null);
-  ic.addPoi(POI_CLR_ID.ACC, "Academic Computing Center", "ACC", null);
-  ic.addPoi(POI_CLR_ID.MANLEY_CENTER, "Albert E. Manley College Center", "MANLEY_CENTER", null);
-  ic.addPoi(POI_CLR_ID.SCIENCE_CENTER, "Albro-Falconer-Manley Science Center", "SCIENCE_CENTER", null);
-  ic.addPoi(POI_CLR_ID.BESSIE_STRONG, "Bessie Strong Hall", "BESSIE_STRONG", null);
-  ic.addPoi(POI_CLR_ID.BDT_SUITES, "Beverly Daniel Tatum Suites", "BDT_SUITES", null);
-  ic.addPoi(POI_CLR_ID.POST_OFFICE, "Bookstore & Post Office", "POST_OFFICE", null);
-  ic.addPoi(POI_CLR_ID.LLC1, "Donald and Isabel Stewart Living & Learning Center", "LLC1", null);
-  ic.addPoi(POI_CLR_ID.MANLEY_HALL, "Dorothy Shepard Manley Hall", "MANLEY_HALL", null);
-  ic.addPoi(POI_CLR_ID.FMS, "Facilities Management & Services", "FMS", null);
-  ic.addPoi(POI_CLR_ID.GILES, "Giles Hall", "GILES", null);
-  ic.addPoi(POI_CLR_ID.HOWARD_HARRELD, "Howard-Harreld Hall", "HOWARD_HARRELD", null);
-  ic.addPoi(POI_CLR_ID.FINE_ARTS, "John D. Rockefeller Fine Arts Building", "FINE_ARTS", null);
-  ic.addPoi(POI_CLR_ID.LLC2, "Johnnetta Betsch Cole Living & Learning Center", "LLC2", null);
-  ic.addPoi(POI_CLR_ID.LAURA_SPELMAN, "Laura Spelman Hall", "LAURA_SPELMAN", null);
-  ic.addPoi(POI_CLR_ID.LLC2_AUDITORIUM, "LLC II Auditorium", "LLC2_AUDITORIUM", null);
-  ic.addPoi(POI_CLR_ID.MACVICAR, "MacVicar Health Services", "MACVICAR", null);
-  ic.addPoi(POI_CLR_ID.MILIGAN, "Milligan Building", "MILIGAN", null);
-  ic.addPoi(POI_CLR_ID.MOREHOUSE_JAMES, "Morehouse-James Hall", "MOREHOUSE_JAMES", null);
-  ic.addPoi(POI_CLR_ID.PACKARD, "Packard Hall", "PACKARD", null);
-  ic.addPoi(POI_CLR_ID.READ, "Read Hall", "READ", null);
-  ic.addPoi(POI_CLR_ID.REYNOLDS_COTTAGE, "Reynolds Cottage", "REYNOLDS_COTTAGE", null);
-  ic.addPoi(POI_CLR_ID.ROCKEFELLER, "Rockefeller Hall", "ROCKEFELLER", null);
-  ic.addPoi(POI_CLR_ID.MCALPIN, "Sally Sage McAlpin Hall", "MCALPIN", null);
-  ic.addPoi(POI_CLR_ID.SISTERS_CHAPEL, "Sisters Chapel", "SISTERS_CHAPEL", null);
-  ic.addPoi(POI_CLR_ID.TAPLEY, "Tapley Hall", "TAPLEY", null);
-  ic.addPoi(POI_CLR_ID.COSBY, "The Camille Olivia Hanks Cosby, Ed.D. Academic Center", "COSBY", null);
-  ic.addPoi(POI_CLR_ID.WEST_PARKING, "West Campus Parking Deck & Public Safety", "WEST_PARKING", null);
-  ic.addPoi(POI_CLR_ID.OVAL, "The Oval", "OVAL", null);
-  ic.addPoi(POI_CLR_ID.SPELMAN_LN, "Spelman Lane SW", "SPELMAN_LN", null);
-  ic.addPoi(POI_CLR_ID.GREENSFERRY_AVE, "Greensferry Avenue SW", "GREENSFERRY_AVE", null);
-  ic.addPoi(POI_CLR_ID.WESTVIEW_DR, "Westview Drive SW", "WESTVIEW_DR", null);
-  ic.addPoi(POI_CLR_ID.LEE_ST, "Lee Street SW", "LEE_ST", null);
-  ic.addPoi(POI_CLR_ID.WEST_END_AVE, "West End Avenue SW", "WEST_END_AVE", null);
-  ic.addPoi(POI_CLR_ID.CHAPEL_ST, "Chapel Street SW", "CHAPEL_ST", null);
+  ic.addPoi(POI_CLR_ID.MOREHOUSE_DECK, "Morehouse Deck", "MOREHOUSE_DECK");
+  ic.addPoi(POI_CLR_ID.ABBY_ALDRICH, "Abby Aldrich Rockefeller Hall", "ABBY_ALDRICH");
+  ic.addPoi(POI_CLR_ID.ACC, "Academic Computing Center", "ACC");
+  ic.addPoi(POI_CLR_ID.MANLEY_CENTER, "Albert E. Manley College Center", "MANLEY_CENTER");
+  ic.addPoi(POI_CLR_ID.SCIENCE_CENTER, "Albro-Falconer-Manley Science Center", "SCIENCE_CENTER");
+  ic.addPoi(POI_CLR_ID.BESSIE_STRONG, "Bessie Strong Hall", "BESSIE_STRONG");
+  ic.addPoi(POI_CLR_ID.BDT_SUITES, "Beverly Daniel Tatum Suites", "BDT_SUITES");
+  ic.addPoi(POI_CLR_ID.POST_OFFICE, "Bookstore & Post Office", "POST_OFFICE");
+  ic.addPoi(POI_CLR_ID.LLC1, "Donald and Isabel Stewart Living & Learning Center", "LLC1");
+  ic.addPoi(POI_CLR_ID.MANLEY_HALL, "Dorothy Shepard Manley Hall", "MANLEY_HALL");
+  ic.addPoi(POI_CLR_ID.FMS, "Facilities Management & Services", "FMS");
+  ic.addPoi(POI_CLR_ID.GILES, "Giles Hall", "GILES");
+  ic.addPoi(POI_CLR_ID.HOWARD_HARRELD, "Howard-Harreld Hall", "HOWARD_HARRELD");
+  ic.addPoi(POI_CLR_ID.FINE_ARTS, "John D. Rockefeller Fine Arts Building", "FINE_ARTS");
+  ic.addPoi(POI_CLR_ID.LLC2, "Johnnetta Betsch Cole Living & Learning Center", "LLC2");
+  ic.addPoi(POI_CLR_ID.LAURA_SPELMAN, "Laura Spelman Hall", "LAURA_SPELMAN");
+  ic.addPoi(POI_CLR_ID.LLC2_AUDITORIUM, "LLC II Auditorium", "LLC2_AUDITORIUM");
+  ic.addPoi(POI_CLR_ID.MACVICAR, "MacVicar Health Services", "MACVICAR");
+  ic.addPoi(POI_CLR_ID.MILIGAN, "Milligan Building", "MILIGAN");
+  ic.addPoi(POI_CLR_ID.MOREHOUSE_JAMES, "Morehouse-James Hall", "MOREHOUSE_JAMES");
+  ic.addPoi(POI_CLR_ID.PACKARD, "Packard Hall", "PACKARD");
+  ic.addPoi(POI_CLR_ID.READ, "Read Hall", "READ");
+  ic.addPoi(POI_CLR_ID.REYNOLDS_COTTAGE, "Reynolds Cottage", "REYNOLDS_COTTAGE");
+  ic.addPoi(POI_CLR_ID.ROCKEFELLER, "Rockefeller Hall", "ROCKEFELLER");
+  ic.addPoi(POI_CLR_ID.MCALPIN, "Sally Sage McAlpin Hall", "MCALPIN");
+  ic.addPoi(POI_CLR_ID.SISTERS_CHAPEL, "Sisters Chapel", "SISTERS_CHAPEL");
+  ic.addPoi(POI_CLR_ID.TAPLEY, "Tapley Hall", "TAPLEY");
+  ic.addPoi(POI_CLR_ID.COSBY, "The Camille Olivia Hanks Cosby, Ed.D. Academic Center", "COSBY");
+  ic.addPoi(POI_CLR_ID.WEST_PARKING, "West Campus Parking Deck & Public Safety", "WEST_PARKING");
+  ic.addPoi(POI_CLR_ID.OVAL, "The Oval", "OVAL");
+  ic.addPoi(POI_CLR_ID.SPELMAN_LN, "Spelman Lane SW", "SPELMAN_LN");
+  ic.addPoi(POI_CLR_ID.GREENSFERRY_AVE, "Greensferry Avenue SW", "GREENSFERRY_AVE");
+  ic.addPoi(POI_CLR_ID.WESTVIEW_DR, "Westview Drive SW", "WESTVIEW_DR");
+  ic.addPoi(POI_CLR_ID.LEE_ST, "Lee Street SW", "LEE_ST");
+  ic.addPoi(POI_CLR_ID.WEST_END_AVE, "West End Avenue SW", "WEST_END_AVE");
+  ic.addPoi(POI_CLR_ID.CHAPEL_ST, "Chapel Street SW", "CHAPEL_ST");
+  ic.addPoi(POI_CLR_ID.TENNIS_COURTS, "Tennis Courts", "POI");
+  ic.addPoi(POI_CLR_ID.NEW_OVAL, "The New Oval", "POI");
+  ic.addPoi(POI_CLR_ID.AMPHITHEATER, "Amphitheater", "POI");
+  ic.addPoi(POI_CLR_ID.PARK, "The Park!!!", "POI");
 
   ic.createPoi(long2Color(POI_CLR_ID.FOUNTAIN), "Oval Fountain", "FOUNTAIN", new Vect2(993, 364));
   ic.createPoi(long2Color(POI_CLR_ID.ARCH), "The Arch", "ARCH", new Vect2(1049, 557));
+  ic.createPoi(long2Color(POI_CLR_ID.WAR_GARDEN), "War Garden", "POI", new Vect2(902, 95));
+  ic.createPoi(long2Color(POI_CLR_ID.PACKARD_GARDEN),  "Mary J. Packard Garden", "POI", new Vect2(1271, 819));
 
   key_vx = 0.0;
   key_vy = 0.0;
@@ -160,7 +170,6 @@ color long2Color(long clr_long)
   long r = (clr_long >> 16) & 0xff;  // red
   long g = (clr_long >> 8) & 0xff;   // green
   long b = clr_long & 0xff;          // blue
-  println(color(r,g,b));
   return color(r, g, b);
 }
 
@@ -207,8 +216,21 @@ public void draw()
 
       if (bGameControllerPresent == true)
       {
-        vx = 0.05 * gamePad.getSlider("LEFT_JOY_X").getValue();
-        vy = 0.05 * gamePad.getSlider("LEFT_JOY_Y").getValue();
+        vx = 0.02 * gamePad.getSlider("LEFT_JOY_X").getValue();
+        vy = 0.02 * gamePad.getSlider("LEFT_JOY_Y").getValue();
+        
+        if (gamePad.getButton("BTN_6").pressed())
+        {  
+          vx *= 5;
+          vy *= 5;
+        }
+        /*
+        if (gamePad.getButton("BTN_5").pressed())
+        {  
+          vx /= 10;
+          vy /= 10;
+        }
+        */
       }
       
       vx += key_vx;
@@ -228,7 +250,6 @@ public void draw()
       }
       
       //gamePad.getButton("BTN_1").pressed()
-      //ellipse(x, y, 10, 10);
       ic.player.setVelocity(vx, vy);
       ic.player.updatePosition(frame_period_ms);
       ic.player.Draw();
