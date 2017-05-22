@@ -71,11 +71,14 @@ double key_vx, key_vy;    //X and Y velocities based on keyboard input
 Boolean bDisplayPixels = false;  //by default, we will display GIS coordinates, not pixels
 PImage splashScreen;
 
+int SelectedBackgroundImage = 0;
 /* ======================================================================
 ====================================================================== */
 public void setup() 
 {
   //must match ICP.SCREEN_WIDTH and ICP.SCREEN_HEIGHT
+  //fullScreen();
+  
   size(1920, 1080);
   
   // Initialize the ControlIO
@@ -88,7 +91,6 @@ public void setup()
   {
     println("No suitable game controller found.");
     bGameControllerPresent = false;    //indicate that a controller is not present
-    //System.exit(-1); // End the program NOW!
   }
 
   //---------- instantiate the ic object ----------
@@ -134,8 +136,6 @@ public void setup()
   ic.addPoi(POI_CLR_ID.TAPLEY, "Tapley Hall", "TAPLEY", null);
   ic.addPoi(POI_CLR_ID.COSBY, "The Camille Olivia Hanks Cosby, Ed.D. Academic Center", "COSBY", null);
   ic.addPoi(POI_CLR_ID.WEST_PARKING, "West Campus Parking Deck & Public Safety", "WEST_PARKING", null);
-  ic.addPoi(POI_CLR_ID.FOUNTAIN, "Oval Fountain", "FOUNTAIN", new Vect2(993, 364));
-  ic.addPoi(POI_CLR_ID.ARCH, "The Arch", "ARCH", new Vect2(1049,557));
   ic.addPoi(POI_CLR_ID.OVAL, "The Oval", "OVAL", null);
   ic.addPoi(POI_CLR_ID.SPELMAN_LN, "Spelman Lane SW", "SPELMAN_LN", null);
   ic.addPoi(POI_CLR_ID.GREENSFERRY_AVE, "Greensferry Avenue SW", "GREENSFERRY_AVE", null);
@@ -143,15 +143,25 @@ public void setup()
   ic.addPoi(POI_CLR_ID.LEE_ST, "Lee Street SW", "LEE_ST", null);
   ic.addPoi(POI_CLR_ID.WEST_END_AVE, "West End Avenue SW", "WEST_END_AVE", null);
   ic.addPoi(POI_CLR_ID.CHAPEL_ST, "Chapel Street SW", "CHAPEL_ST", null);
-  //ic.addPoi(POI_CLR_ID.WAR_GARDEN, "The War Garden", "WAR_GARDEN", null);
-  //ic.addPoi(POI_CLR_ID.PACKARD_GARDEN, "Sarah Packard Memorial Garden", "PACKARD_GARDEN", null);
-  
+
+  ic.createPoi(long2Color(POI_CLR_ID.FOUNTAIN), "Oval Fountain", "FOUNTAIN", new Vect2(993, 364));
+  ic.createPoi(long2Color(POI_CLR_ID.ARCH), "The Arch", "ARCH", new Vect2(1049, 557));
+
   key_vx = 0.0;
   key_vy = 0.0;
   
-  splashScreen = loadImage("splash/icp_splash_1920x1080.png");
-  //DoeLogo = loadImage();
-  //BoeingLogo = loadImage();
+  splashScreen = loadImage("icp_splash_1920x1080.png");
+}
+
+/* ======================================================================
+====================================================================== */
+color long2Color(long clr_long)
+{
+  long r = (clr_long >> 16) & 0xff;  // red
+  long g = (clr_long >> 8) & 0xff;   // green
+  long b = clr_long & 0xff;          // blue
+  println(color(r,g,b));
+  return color(r, g, b);
 }
 
 /* ======================================================================
@@ -178,9 +188,22 @@ public void draw()
       break;
       
     case MODE_EXPLORE:
-      background(ic.getCampusSatelliteImage());
-      ic.drawPoiMarkers();
-      //image(highlight, 0, 0);
+      switch (SelectedBackgroundImage)
+      {
+        case 0:
+          background(ic.getCampusSatelliteImage());
+          ic.drawPoiMarkers();
+          break;
+        case 1:
+          background(ic.getCampusPoiImage());
+          break;
+        case 2:
+          background(ic.getCampusKeepOutMap());
+          break;
+        default:
+          SelectedBackgroundImage = 0;
+      }
+      
 
       if (bGameControllerPresent == true)
       {
@@ -232,30 +255,6 @@ public void draw()
   }
 }
 
-/* ======================================================================
-
-====================================================================== */
-void drawPoiMarkers()
-{
-  Iterator it;
-  Map pois = ic.getPoiMap();
-  it = pois.entrySet().iterator();
-  Poi poi;
-  long colorKey;
-  
-  while (it.hasNext())
-  {
-      Map.Entry entry = (Map.Entry)it.next();
-      colorKey = (long)entry.getKey();
-      poi = (Poi)entry.getValue();
-      
-      if (poi.marker != null)
-        println(colorKey, poi.marker.format());
-      //System.out.println(entry.getKey() + " = " + entry.getValue());
-      //it.remove(); // avoids a ConcurrentModificationException
-  }
-
-}
 
 /* ======================================================================
 ====================================================================== */
@@ -303,8 +302,19 @@ void keyPressed()
       ic.player.bFlyOver = !ic.player.bFlyOver;
       break;
     
+    case 'm':    //toggle background
+      SelectedBackgroundImage++;
+      if (SelectedBackgroundImage > 2) SelectedBackgroundImage = 0;  //wrap
+      break;
+      
     case 'x':
-      drawPoiMarkers();
+      //PImage img = ic.getCampusKeepOutMap();
+      //ic.createPoi(color(255,0,0), "POIxxx", "ACC", new Vect2(1000,500));
+        /*
+      for (int i=0; i < 500; i++)
+        img.pixels[10*1920+i] = color(255, 255, 0);
+        img.ellipse(100, 100, 10, 10);
+        */
       break;
       
     default:

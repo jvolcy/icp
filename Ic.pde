@@ -44,21 +44,21 @@ public class Ic
  
   /* ======================================================================
   ====================================================================== */
-  void setCampusSatelliteImage(String imageFileName)
+  public void setCampusSatelliteImage(String imageFileName)
   {
     campusSatelliteImage = loadImage(imageFileName);
   }
   
   /* ======================================================================
   ====================================================================== */
-  PImage getCampusSatelliteImage()
+  public PImage getCampusSatelliteImage()
   {
     return campusSatelliteImage;
   }
   
   /* ======================================================================
   ====================================================================== */
-  void setCampusPoiImage(String imageFileName)
+  public void setCampusPoiImage(String imageFileName)
   {
     campusPoiImage = loadImage(imageFileName);
     player.setPoiMap(campusPoiImage, DEFAULT_BACKGROND_COLOR);
@@ -66,10 +66,24 @@ public class Ic
   
   /* ======================================================================
   ====================================================================== */
-  void setCampusKeepOutMap(String imageFileName)
+  public PImage getCampusPoiImage()
+  {
+    return campusPoiImage;
+  }
+  
+  /* ======================================================================
+  ====================================================================== */
+  public void setCampusKeepOutMap(String imageFileName)
   {
     campusKeepOutMap = loadImage(imageFileName);
     player.setKeepOutMap(campusKeepOutMap, DEFAULT_BACKGROND_COLOR);
+  }
+  
+  /* ======================================================================
+  ====================================================================== */
+  public PImage getCampusKeepOutMap()
+  {
+    return campusKeepOutMap;
   }
   
   /* ======================================================================
@@ -78,15 +92,25 @@ public class Ic
   object itself as the value.  Using this arrangement, we can get a 
   reference to a POI by simply looking it up by ID# in the dictionary.
   ====================================================================== */
-  void addPoi(long colorID, String name, String description, Vect2 marker)
+  public void addPoi(long colorID, String name, String baseFileName, Vect2 marker)
   {
-    POIs.put(colorID, new Poi(colorID, name, description, marker));
+    POIs.put(colorID, new Poi(colorID, name, baseFileName, marker));
   }
   
   /* ======================================================================
+  ====================================================================== */
+  public void createPoi(long colorID, String name, String baseFileName, Vect2 marker)
+  {
+    //campusPoiImage
+    drawCircleOnImage(campusPoiImage, (int)marker.i, (int)marker.j, 10, (color)colorID);
+    POIs.put(colorID, new Poi(colorID, name, baseFileName, marker));
+  }
+  
+
+  /* ======================================================================
   Function that returns a Poi given its colorID
   ====================================================================== */
-  Poi getPoi(long colorID)
+  public Poi getPoi(long colorID)
   {
     return (Poi)POIs.get(colorID);
   }
@@ -94,7 +118,7 @@ public class Ic
 
   /* ======================================================================
   ====================================================================== */
-  Map getPoiMap()
+  public Map getPoiMap()
   {
     return POIs;
   }
@@ -102,7 +126,7 @@ public class Ic
   /* ======================================================================
   Function that returns a Poi corresponding to the player's position.
   ====================================================================== */
-  Poi getNearbyPoi()
+  protected Poi getNearbyPoi()
   {
     long x = player.getNearbyBuilding();
     if (x != DEFAULT_BACKGROND_COLOR)
@@ -116,7 +140,7 @@ public class Ic
   /* ======================================================================
   Function that draws markers for POIs with specified coordinates.
   ====================================================================== */
-  void drawPoiMarkers()
+  public void drawPoiMarkers()
   {
     Iterator it = POIs.entrySet().iterator();
     Poi poi;
@@ -143,6 +167,20 @@ public class Ic
     }
   }
 
+  /* ======================================================================
+  ====================================================================== */
+  protected void drawCircleOnImage(PImage img, int x, int y, int radius, color clr)
+  {
+    float distance2;
+    for(int j=y-radius; j<y+radius; j++)
+      for(int i=x-radius; i<x+radius; i++)
+      {
+        distance2 = (i-x)*(i-x) + (j-y)*(j-y);
+        if(distance2 < radius * radius)
+          img.pixels[j*img.width+i] = clr;
+      }
+  }
+  
 }
 
 
