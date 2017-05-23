@@ -5,6 +5,13 @@ import java.util.Iterator;
 /* ======================================================================
 Constants & Globals
 ====================================================================== */
+//---------- Credits ----------
+final String credits[] = {  "Thulani Vereen '20, 3D Campus Modeling & Fabrication",
+                            "Lauren Jenay-Kelley '18, ICP Software/Layered Maps", 
+                            "Cierra Lewis '17, ICP Mobile App/GIS Mapping", 
+                            "Jerry Volcy, Advisor"};
+String creditString;
+ 
 //---------- Game Controller ----------
 ControlIO ioController;
 ControlDevice gamePad;
@@ -17,6 +24,7 @@ public static final int MODE_SPLASH = 0;
 public static final int MODE_EXPLORE = 1;
 public static final int MODE_QUIT = 10;
 public static final int TEXT_REGION_X = 1490;
+public static final int GIS_TEXT_X_LOCATION = 1500;
   
 //---------- Points of Interest Color IDs ----------
 static public class POI_CLR_ID
@@ -175,6 +183,12 @@ public void setup()
   background(0, 0, 0);
   image(splashScreen, 0, 0);
   idleCounter = 0;
+  
+  creditString = "";
+  for (int i=0; i<credits.length; i++)
+  {
+    creditString += credits[i] + "\n";
+  }
 }
 
 /* ======================================================================
@@ -206,6 +220,14 @@ public void draw()
       background(0, 0, 0);
       image(splashScreen, 0, 0);
       
+      fill(255, 255, 255);
+      textSize(36);
+      text("Interactive Campus Project", 20, 50);
+      textSize(18);
+      text(creditString, 20, 70, 1000, 1800);  // Text wraps within text box
+      textSize(30);
+      text("Spelman Innovation Lab", 565, 1010);
+
       //to do: wait a few seconds then switch modes
       if ((bGameControllerPresent == true) && (gamePad.getSlider("LEFT_JOY_Y").getValue() != 0))
         icpMode = MODE_EXPLORE;
@@ -275,14 +297,14 @@ public void draw()
       key_vx = 0.0;
       key_vy = 0.0;
       
-      textSize(14);
-      fill(220, 220, 220);
+      textSize(12);
+      fill(155, 155, 155);
       if (bDisplayPixels == true)    //display coordinates in pixels
-        text(ic.player.getLocation().format(), TEXT_REGION_X+10, 800, width-TEXT_REGION_X-1, height-800);  // Text wraps within text box
+        text(ic.player.getLocation().format(), GIS_TEXT_X_LOCATION+10, height-20, width-GIS_TEXT_X_LOCATION, 20);  // Text wraps within text box
       else    //display GIS coordinates
       {
         GisCoord g = Gis.Pixel2Gis(ic.player.getLocation());
-        text(g.longitude.toString() + ", " + g.latitude.toString(), TEXT_REGION_X+10, 800, width-TEXT_REGION_X-1, height-800);  // Text wraps within text box
+        text(String.format("%6f", g.longitude) + ", " + String.format("%6f", g.latitude), GIS_TEXT_X_LOCATION+10, height-20, width-GIS_TEXT_X_LOCATION, 20);  // Text wraps within text box
       }
       
       //gamePad.getButton("BTN_1").pressed()
@@ -301,7 +323,7 @@ public void draw()
         
         textSize(14);
         fill(220, 220, 220);
-        text(poi.description, TEXT_REGION_X+10, 550, width-TEXT_REGION_X-10-10, height -560);  // Text wraps within text box
+        text(poi.description, TEXT_REGION_X+10, 550, width-TEXT_REGION_X-10-10, height-550-30);  // Text wraps within text box
       }
 
       //after 5 minutes of idle time, return to the splash screen
