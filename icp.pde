@@ -74,8 +74,17 @@ Ic ic;    //the main 'Interactive Campus' object
 double key_vx, key_vy;    //X and Y velocities based on keyboard input
 Boolean bDisplayPixels = false;  //by default, we will display GIS coordinates, not pixels
 PImage splashScreen;
+static int IDLE_SECONDS = 300;    //5 minutes
+int idleCounter;
 
-int SelectedBackgroundImage = 0;
+//---------- selected_background_image ----------
+final int BKGND_SATELLITE = 0;
+final int BKGND_POI = 1;
+final int BKGND_KEEPOUT = 2;
+final int BKGND_ARCHITECTURE = 3;
+
+int SelectedBackgroundImage = BKGND_SATELLITE;    //by default, use satellite view
+PImage architectureDrawing;
 /* ======================================================================
 ====================================================================== */
 public void setup() 
@@ -106,7 +115,7 @@ public void setup()
   ic.setCampusKeepOutMap("CampusKeepoutMap_1920x1080.png");
     
   //set initial mode
-  icpMode = MODE_SPLASH;
+  icpMode = MODE_EXPLORE;
   
   frame_period_ms = 1000.0/frameRate;
 
@@ -161,6 +170,11 @@ public void setup()
   key_vy = 0.0;
   
   splashScreen = loadImage("icp_splash_1920x1080.png");
+  architectureDrawing = loadImage("architecture_map_1920x1080.png");
+
+  background(0, 0, 0);
+  image(splashScreen, 0, 0);
+  idleCounter = 0;
 }
 
 /* ======================================================================
@@ -190,10 +204,14 @@ public void draw()
   {
     case MODE_SPLASH:
       background(0, 0, 0);
-      
       image(splashScreen, 0, 0);
+      
       //to do: wait a few seconds then switch modes
-      icpMode = MODE_EXPLORE;
+      if ((bGameControllerPresent == true) && (gamePad.getSlider("LEFT_JOY_Y").getValue() != 0))
+        icpMode = MODE_EXPLORE;
+      
+      idleCounter = (int)(IDLE_SECONDS * frameRate);
+      
       break;
       
     case MODE_EXPLORE:
@@ -208,6 +226,9 @@ public void draw()
           break;
         case 2:
           background(ic.getCampusKeepOutMap());
+          break;
+        case 3:
+          background(architectureDrawing);
           break;
         default:
           SelectedBackgroundImage = 0;
@@ -224,13 +245,28 @@ public void draw()
           vx *= 5;
           vy *= 5;
         }
-        /*
-        if (gamePad.getButton("BTN_5").pressed())
+        
+        if (gamePad.getButton("BTN_1").pressed())
         {  
-          vx /= 10;
-          vy /= 10;
+          SelectedBackgroundImage = BKGND_SATELLITE;
         }
-        */
+        
+        if (gamePad.getButton("BTN_2").pressed())
+        {  
+          SelectedBackgroundImage = BKGND_POI;
+        }
+        
+        if (gamePad.getButton("BTN_3").pressed())
+        {  
+          SelectedBackgroundImage = BKGND_KEEPOUT;
+        }
+        
+        if (gamePad.getButton("BTN_4").pressed())
+        {  
+          SelectedBackgroundImage = BKGND_ARCHITECTURE;
+        }
+        
+        ic.player.bFlyOver = gamePad.getButton("BTN_8").pressed();
       }
       
       vx += key_vx;
@@ -266,8 +302,13 @@ public void draw()
         textSize(14);
         fill(220, 220, 220);
         text(poi.description, TEXT_REGION_X+10, 550, width-TEXT_REGION_X-10-10, height -560);  // Text wraps within text box
-    }
+      }
 
+      //after 5 minutes of idle time, return to the splash screen
+      idleCounter--;
+      if (idleCounter <= 0)
+        icpMode = MODE_SPLASH;
+        
       break;
   
     case MODE_QUIT:
@@ -325,7 +366,7 @@ void keyPressed()
     
     case 'm':    //toggle background
       SelectedBackgroundImage++;
-      if (SelectedBackgroundImage > 2) SelectedBackgroundImage = 0;  //wrap
+      if (SelectedBackgroundImage > 3) SelectedBackgroundImage = 0;  //wrap
       break;
       
     case 'x':

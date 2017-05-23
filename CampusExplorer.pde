@@ -50,7 +50,17 @@ public class CampusExplorer extends Actor
 
     //if we are in the keepout region, restore our old location
     if (inKeepOutRegion() == true)
-      setLocation(oldLocation);
+      {
+        setLocation(oldLocation);
+        
+        //avoid being trapped inside a keepout region after disabling
+        //flyover here
+        while(inKeepOutRegion() == true)
+        {
+          oldLocation.i++;
+          setLocation(oldLocation);
+        }
+      }
       
   }
 
