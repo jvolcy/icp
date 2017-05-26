@@ -6,9 +6,9 @@ import java.util.Iterator;
 Constants & Globals
 ====================================================================== */
 //---------- Credits ----------
-final String credits[] = {  "Thulani Vereen '20, 3D Campus Modeling & Fabrication",
-                            "Lauren Jenay-Kelley '18, ICP Software/Layered Maps", 
-                            "Cierra Lewis '17, ICP Mobile App/GIS Mapping", 
+final String credits[] = {  "Thulani A. Vereen '20, 3D Campus Modeling & Fabrication",
+                            "Lauren-Jenay Kelley '18, ICP Software/Layered Maps", 
+                            "Cierra L. Lewis '17, ICP Mobile App/GIS Mapping", 
                             "Jerry Volcy, Advisor"};
 String creditString;
  
@@ -22,7 +22,9 @@ int icpMode;
 
 public static final int MODE_SPLASH = 0;
 public static final int MODE_EXPLORE = 1;
+public static final int MODE_HELP = 2;
 public static final int MODE_QUIT = 10;
+
 public static final int TEXT_REGION_X = 1490;
 public static final int GIS_TEXT_X_LOCATION = 1500;
   
@@ -67,12 +69,13 @@ static public class POI_CLR_ID
   static long LEE_ST           = (long)(#602224);  // Lee St
   static long WEST_END_AVE     = (long)(#534dc5);  // West End Ave
   static long CHAPEL_ST        = (long)(#ff82c4);  // Chapel St
-  static long WAR_GARDEN       = (long)(#d26798);  // War Garden
+  static long WAR_GARDEN       = (long)(#a267f8);  // War Garden
   static long PACKARD_GARDEN   = (long)(#0d6798);  // Mary J. Packard Garden
   static long TENNIS_COURTS    = (long)(#6400a6);  // Tennis Courts
   static long NEW_OVAL         = (long)(#ffb800);  // The New Oval
   static long AMPHITHEATER     = (long)(#644b0f);  // Amphitheater
   static long PARK             = (long)(#442525);  // The Park!!!
+  static long POI_POI001       = (long)(#aaa001);  // POI001
 }
 
 
@@ -81,7 +84,8 @@ double frame_period_ms;  //draw() function refresh period in ms
 Ic ic;    //the main 'Interactive Campus' object
 double key_vx, key_vy;    //X and Y velocities based on keyboard input
 Boolean bDisplayPixels = false;  //by default, we will display GIS coordinates, not pixels
-PImage splashScreen;
+PImage splashScreen;    //splash screen
+PImage icpHelpScreen;  //help screen
 static int IDLE_SECONDS = 300;    //5 minutes
 int idleCounter;
 
@@ -93,6 +97,29 @@ final int BKGND_ARCHITECTURE = 3;
 
 int SelectedBackgroundImage = BKGND_SATELLITE;    //by default, use satellite view
 PImage architectureDrawing;
+
+//---------- Help String ----------
+static String icpKeyboardHelp = "E – Explorer Mode                         F – Toggle Flyover\n"
+                              +"G – Display GIS Coords                 M – Toggle Display Maps\n"
+                              +"P – Display XY Coords in Pixels     S – Display Splash Screen\n"
+                              +"Q - Quit";
+
+static String icpGamepadHelp = " 1 - Satellite View\n"
+                               +" 2 - Not Used\n"
+                               +" 3 - Not Used\n"
+                               +" 4 - Not Used\n"
+                               +" 5 - Not Used\n"
+                               +" 6 - Not Used\n"
+                               +" 7 - Not Used\n"
+                               +" 8 - Not Used\n"
+                               +" 9 - Not Used\n"
+                               +"10 - Not Used\n"
+                               +"11 - Not Used\n"
+                               +"12 - Not Used\n"
+                               +"13 - Not Used\n"
+                               +"14 - Not Used\n";
+                               
+                               
 /* ======================================================================
 ====================================================================== */
 public void setup() 
@@ -173,13 +200,15 @@ public void setup()
   ic.createPoi(long2Color(POI_CLR_ID.ARCH), "The Arch", "ARCH", new Vect2(1049, 557));
   ic.createPoi(long2Color(POI_CLR_ID.WAR_GARDEN), "War Garden", "POI", new Vect2(902, 95));
   ic.createPoi(long2Color(POI_CLR_ID.PACKARD_GARDEN),  "Mary J. Packard Garden", "POI", new Vect2(1271, 819));
+  ic.createPoi(long2Color(POI_CLR_ID.POI_POI001), "POI001", "POI001", new Vect2(691, 363));
 
   key_vx = 0.0;
   key_vy = 0.0;
   
   splashScreen = loadImage("icp_splash_1920x1080.png");
   architectureDrawing = loadImage("architecture_map_1920x1080.png");
-
+  icpHelpScreen = loadImage("icp_help.png");
+  
   background(0, 0, 0);
   image(splashScreen, 0, 0);
   idleCounter = 0;
@@ -262,6 +291,9 @@ public void draw()
         vx = 0.02 * gamePad.getSlider("LEFT_JOY_X").getValue();
         vy = 0.02 * gamePad.getSlider("LEFT_JOY_Y").getValue();
         
+        if (vy != 0)    //still active; reset the idle counter
+          idleCounter = (int)(IDLE_SECONDS * frameRate);
+
         if (gamePad.getButton("BTN_6").pressed())
         {  
           vx *= 5;
@@ -289,6 +321,17 @@ public void draw()
         }
         
         ic.player.bFlyOver = gamePad.getButton("BTN_8").pressed();
+        
+        if (gamePad.getButton("BTN_9").pressed())
+        {
+          icpMode = MODE_HELP;
+        }
+        
+        if (gamePad.getButton("BTN_10").pressed())
+        {
+          icpMode = MODE_HELP;
+        }
+        
       }
       
       vx += key_vx;
@@ -304,7 +347,7 @@ public void draw()
       else    //display GIS coordinates
       {
         GisCoord g = Gis.Pixel2Gis(ic.player.getLocation());
-        text(String.format("%6f", g.longitude) + ", " + String.format("%6f", g.latitude), GIS_TEXT_X_LOCATION+10, height-20, width-GIS_TEXT_X_LOCATION, 20);  // Text wraps within text box
+        text(String.format("%6f", g.latitude) + ", " + String.format("%6f", g.longitude), GIS_TEXT_X_LOCATION+10, height-20, width-GIS_TEXT_X_LOCATION, 20);  // Text wraps within text box
       }
       
       //gamePad.getButton("BTN_1").pressed()
@@ -333,6 +376,28 @@ public void draw()
         
       break;
   
+    case MODE_HELP:
+      background(0, 0, 0);
+      image(icpHelpScreen, 0, 0);
+      
+      fill(255, 255, 255);
+      textSize(18);
+      text("Spelman Innovation Lab", 300, 275);
+         
+      textSize(24);
+      text(icpGamepadHelp, 1400, 50, 500, 600);
+      
+      
+      fill(200, 170, 0);
+      text(icpKeyboardHelp, 40, 800, 1000, 200);  // Text wraps within text box
+      
+      //after 5 minutes of idle time, return to the splash screen
+      idleCounter--;
+      if (idleCounter <= 0)
+        icpMode = MODE_SPLASH;
+
+      break;
+      
     case MODE_QUIT:
       System.exit(0); // End the program NOW!
       break;
@@ -384,6 +449,10 @@ void keyPressed()
       
     case 'f':    //toggle fly over
       ic.player.bFlyOver = !ic.player.bFlyOver;
+      break;
+      
+    case 'h':    //help
+      icpMode = MODE_HELP;
       break;
     
     case 'm':    //toggle background
