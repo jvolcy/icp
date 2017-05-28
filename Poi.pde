@@ -36,7 +36,7 @@ public class Poi
     try
     {
       description = new String(Files.readAllBytes(Paths.get(desc_filename)));
-      println(desc_filename);
+      //println(desc_filename);
     }
     catch(IOException e) 
     {

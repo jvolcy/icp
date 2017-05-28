@@ -1,1 +1,23 @@
-This is a temporary POI file.
+#Use this file to specify points-of-interest around the campus
+#You must supply a very brief descriptive name of the POI, a base filename 
+#and the X,Y pixel coordinates of the POI.
+#Use ALL CAPS for the base filename.  You will need to create a .JPG and .TXT
+#for the specified base filename.
+#Use the placeholder values POIXXX as the base filename if desired.  The
+#corresponding files for this base filename are POIXXX.JPG and POIXXX.TXT.
+#Note that the entire filename, including file extensions, are in CAPS.
+#
+#The file is formatted as a colon separated field of 4 values per line.  Each line
+#represents a single POI.  In order, the four fields are a brief description, a
+#base filename, the x-coordinate of the pixel location of the POI and the
+#y-coordinate of the POI:
+#
+#name : basefilename : X-pixel : Y-pixel
+
+Oval Fountain : FOUNTAIN : 993 : 364
+The Arch : ARCH : 1049 : 557
+War Garden : POIXXX : 902 : 95
+Mary J. Packard Garden : POIXXX : 1271 : 819
+POI001 : POI001 : 691 : 363
+
+

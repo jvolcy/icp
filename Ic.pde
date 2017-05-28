@@ -1,5 +1,5 @@
 
-
+import java.io.FileReader;
 
 public class Ic
 {
@@ -107,6 +107,67 @@ public class Ic
   }
   
 
+  /* ======================================================================
+  ====================================================================== */
+  public void processPoiFile(String filename)
+  {
+    BufferedReader br = null;
+    String strLine = "";
+    long baseReservedPoiID = (long)(#aaa000);
+    
+    try
+    {
+          br = new BufferedReader( new FileReader(filename) );
+          while( (strLine = br.readLine()) != null)
+          {
+                  String args[];    //array to hole split strLine
+                  args = strLine.split(":");
+                  strLine = strLine.trim();
+                  if (strLine.length() == 0)
+                  {
+                    //do nothing;  This is a blank line
+                  }
+                  else if (strLine.charAt(0) == '#')
+                  {
+                    //if a line starts with a #, it is a comment; ignore it.
+                    //println("comment: ", strLine);
+                  }
+                  else
+                  {
+                    for (int i=0; i<args.length; i++)
+                    {
+                      args[i] = args[i].trim();
+                    }
+                    
+                    String name = args[0];
+                    String baseFileName = args[1];
+                    int x = int(args[2]);
+                    int y = int(args[3]);
+                    
+                    //println(name, baseFileName, x, y);
+                    
+                    createPoi(baseReservedPoiID, name, baseFileName, new Vect2(x, y));
+                    baseReservedPoiID++;
+
+                    /*
+                    print("==========>");
+                    for (int i=0; i<args.length; i++)
+                    {
+                      args[i] = args[i].trim();
+                      print(args[i] + ", ");
+                    }
+                    println("<==========");
+                    */
+                  }
+          }
+    }
+    catch(IOException e) 
+    {
+      println(e);
+    }
+  }
+  
+  
   /* ======================================================================
   Function that returns a Poi given its colorID
   ====================================================================== */

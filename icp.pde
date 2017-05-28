@@ -24,6 +24,7 @@ public static final int MODE_SPLASH = 0;
 public static final int MODE_EXPLORE = 1;
 public static final int MODE_HELP = 2;
 public static final int MODE_QUIT = 10;
+public static final int MODE_REGISTRATION = 11;
 
 public static final int TEXT_REGION_X = 1490;
 public static final int GIS_TEXT_X_LOCATION = 1500;
@@ -60,8 +61,6 @@ static public class POI_CLR_ID
   static long TAPLEY           = (long)(#ffcc66);  // Tapley Hall
   static long COSBY            = (long)(#00ff80);  // The Camille Olivia Hanks Cosby, Ed.D. Academic Center
   static long WEST_PARKING     = (long)(#ff8000);  // West Campus Parking Deck/ Public Safety
-  static long FOUNTAIN         = (long)(#6648a3);  // Oval fountain
-  static long ARCH             = (long)(#c8bfe7);  // Arch
   static long OVAL             = (long)(#008000);  // The Oval
   static long SPELMAN_LN       = (long)(#ffffbf);  // Spelman Ln
   static long GREENSFERRY_AVE  = (long)(#ff871c);  // Greensferry Ave
@@ -69,13 +68,10 @@ static public class POI_CLR_ID
   static long LEE_ST           = (long)(#602224);  // Lee St
   static long WEST_END_AVE     = (long)(#534dc5);  // West End Ave
   static long CHAPEL_ST        = (long)(#ff82c4);  // Chapel St
-  static long WAR_GARDEN       = (long)(#a267f8);  // War Garden
-  static long PACKARD_GARDEN   = (long)(#0d6798);  // Mary J. Packard Garden
   static long TENNIS_COURTS    = (long)(#6400a6);  // Tennis Courts
   static long NEW_OVAL         = (long)(#ffb800);  // The New Oval
   static long AMPHITHEATER     = (long)(#644b0f);  // Amphitheater
   static long PARK             = (long)(#442525);  // The Park!!!
-  static long POI_POI001       = (long)(#aaa001);  // POI001
 }
 
 
@@ -105,18 +101,18 @@ static String icpKeyboardHelp = "E â€“ Explorer Mode                         F â
                               +"Q - Quit";
 
 static String icpGamepadHelp = " 1 - Satellite View\n"
-                               +" 2 - Not Used\n"
-                               +" 3 - Not Used\n"
-                               +" 4 - Not Used\n"
+                               +" 2 - Architectural Map\n"
+                               +" 3 - Keepout Map\n"
+                               +" 4 - POI Map\n"
                                +" 5 - Not Used\n"
-                               +" 6 - Not Used\n"
+                               +" 6 - Accelerate\n"
                                +" 7 - Not Used\n"
-                               +" 8 - Not Used\n"
-                               +" 9 - Not Used\n"
-                               +"10 - Not Used\n"
+                               +" 8 - Flyover\n"
+                               +" 9 - Help Screen\n"
+                               +"10 - Help Screen\n"
                                +"11 - Not Used\n"
                                +"12 - Not Used\n"
-                               +"13 - Not Used\n"
+                               +"13 - Main Explorer Control\n"
                                +"14 - Not Used\n";
                                
                                
@@ -191,17 +187,13 @@ public void setup()
   ic.addPoi(POI_CLR_ID.LEE_ST, "Lee Street SW", "LEE_ST");
   ic.addPoi(POI_CLR_ID.WEST_END_AVE, "West End Avenue SW", "WEST_END_AVE");
   ic.addPoi(POI_CLR_ID.CHAPEL_ST, "Chapel Street SW", "CHAPEL_ST");
-  ic.addPoi(POI_CLR_ID.TENNIS_COURTS, "Tennis Courts", "POI");
-  ic.addPoi(POI_CLR_ID.NEW_OVAL, "The New Oval", "POI");
-  ic.addPoi(POI_CLR_ID.AMPHITHEATER, "Amphitheater", "POI");
-  ic.addPoi(POI_CLR_ID.PARK, "The Park!!!", "POI");
+  ic.addPoi(POI_CLR_ID.TENNIS_COURTS, "Tennis Courts", "POIXXX");
+  ic.addPoi(POI_CLR_ID.NEW_OVAL, "The New Oval", "POIXXX");
+  ic.addPoi(POI_CLR_ID.AMPHITHEATER, "Amphitheater", "POIXXX");
+  ic.addPoi(POI_CLR_ID.PARK, "The Park!!!", "POIXXX");
 
-  ic.createPoi(long2Color(POI_CLR_ID.FOUNTAIN), "Oval Fountain", "FOUNTAIN", new Vect2(993, 364));
-  ic.createPoi(long2Color(POI_CLR_ID.ARCH), "The Arch", "ARCH", new Vect2(1049, 557));
-  ic.createPoi(long2Color(POI_CLR_ID.WAR_GARDEN), "War Garden", "POI", new Vect2(902, 95));
-  ic.createPoi(long2Color(POI_CLR_ID.PACKARD_GARDEN),  "Mary J. Packard Garden", "POI", new Vect2(1271, 819));
-  ic.createPoi(long2Color(POI_CLR_ID.POI_POI001), "POI001", "POI001", new Vect2(691, 363));
-
+  ic.processPoiFile(sketchPath("") + "data/poi/poi.txt");
+        
   key_vx = 0.0;
   key_vy = 0.0;
   
@@ -347,7 +339,7 @@ public void draw()
       else    //display GIS coordinates
       {
         GisCoord g = Gis.Pixel2Gis(ic.player.getLocation());
-        text(String.format("%6f", g.latitude) + ", " + String.format("%6f", g.longitude), GIS_TEXT_X_LOCATION+10, height-20, width-GIS_TEXT_X_LOCATION, 20);  // Text wraps within text box
+        text(String.format("%.6f", g.latitude) + ", " + String.format("%.6f", g.longitude), GIS_TEXT_X_LOCATION+10, height-20, width-GIS_TEXT_X_LOCATION, 20);  // Text wraps within text box
       }
       
       //gamePad.getButton("BTN_1").pressed()
@@ -401,6 +393,29 @@ public void draw()
     case MODE_QUIT:
       System.exit(0); // End the program NOW!
       break;
+      
+    case MODE_REGISTRATION:
+      final float registrationInchesWidth = 40.0;
+      final float registrationInchesHeight = 30.0;
+      final int registrationPixelWidth = 1200;
+      final int registrationPixelHeight = 900;
+      int registrationX = (width - registrationPixelWidth) / 2;
+      int registrationY = (height - registrationPixelHeight) / 2;
+      
+      background(0, 0, 0);
+      stroke(255, 255, 255);
+      strokeWeight(1);
+      fill(0, 0, 0);
+      rect(registrationX, registrationY, registrationPixelWidth, registrationPixelHeight);
+      line(width/2 - 200, height/2, width/2 + 200, height/2);
+      line(width/2, height/2 - 200, width/2, height/2 + 200);
+      
+      fill(255, 255, 255);
+      textSize(30);
+      text(String.format("%.2f", registrationInchesWidth) + "\" x " + String.format("%.2f\"", registrationInchesHeight), 1200, 900);
+      
+    
+      break;
   }
 }
 
@@ -437,6 +452,10 @@ void keyPressed()
     case 'q':
     case 'Q':
       icpMode = MODE_QUIT;
+      break;
+    
+    case 'r':
+      icpMode = MODE_REGISTRATION;
       break;
       
     case 's':
