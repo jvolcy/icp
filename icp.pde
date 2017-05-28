@@ -6,26 +6,30 @@ import java.util.Iterator;
 Constants & Globals
 ====================================================================== */
 //---------- Credits ----------
-final String credits[] = {  "Thulani A. Vereen '20, 3D Campus Modeling & Fabrication",
-                            "Lauren-Jenay Kelley '18, ICP Software/Layered Maps", 
-                            "Cierra L. Lewis '17, ICP Mobile App/GIS Mapping", 
-                            "Jerry Volcy, Advisor"};
-String creditString;
+final String credits =   "Thulani A. Vereen '20, 3D Campus Modeling & Fabrication\n"
+                       + "Lauren-Jenay Kelley '18, ICP Software/Layered Maps\n"
+                       + "Cierra L. Lewis '17, ICP Mobile App/GIS Mapping\n"
+                       + "Jerry Volcy, Advisor";
  
 //---------- Game Controller ----------
 ControlIO ioController;
 ControlDevice gamePad;
-Boolean bGameControllerPresent;
+/* if a gamecontroller is not present, we can operate the icp with the keyboard. */
+Boolean bGameControllerPresent;  //set to true if we find a game controller
 
 //---------- ICP Modes ----------
+//the made draw() function operates as a state machine.  The variable icpMode
+//is the state variable.
 int icpMode;
 
+//possible values for icpMode defined below
 public static final int MODE_SPLASH = 0;
 public static final int MODE_EXPLORE = 1;
 public static final int MODE_HELP = 2;
 public static final int MODE_QUIT = 10;
 public static final int MODE_REGISTRATION = 11;
 
+//---------- Information Panel Constants ----------
 public static final int TEXT_REGION_X = 1490;
 public static final int GIS_TEXT_X_LOCATION = 1500;
   
@@ -82,25 +86,39 @@ double key_vx, key_vy;    //X and Y velocities based on keyboard input
 Boolean bDisplayPixels = false;  //by default, we will display GIS coordinates, not pixels
 PImage splashScreen;    //splash screen
 PImage icpHelpScreen;  //help screen
+PImage architectureDrawing;  //architectural drawing
 static int IDLE_SECONDS = 300;    //5 minutes
-int idleCounter;
+int idleCounter;    //a counter to check how long the system has been idle (in this case, idle is defined as the joystick not moving)
 
 //---------- selected_background_image ----------
+//In explorer mode, we can choose between a number of background images.  These are identified through the following constants
 final int BKGND_SATELLITE = 0;
 final int BKGND_POI = 1;
 final int BKGND_KEEPOUT = 2;
 final int BKGND_ARCHITECTURE = 3;
 
+//define an integer to specify the current background image
 int SelectedBackgroundImage = BKGND_SATELLITE;    //by default, use satellite view
-PImage architectureDrawing;
 
 //---------- Help String ----------
-static String icpKeyboardHelp = "E – Explorer Mode                         F – Toggle Flyover\n"
-                              +"G – Display GIS Coords                 M – Toggle Display Maps\n"
-                              +"P – Display XY Coords in Pixels     S – Display Splash Screen\n"
-                              +"Q - Quit";
+/* The keyboard help is displayed in two columns.  Correspondingly, there are two help strings. */
+//help1 letters: A, C, E, G, I, K, M, O, Q, S, U, W, Y
+final String icpKeyboardHelpLeft = "E – Explorer Mode\n"
+                              +"G – Display GIS Coords\n"
+                              +"M – Toggle Display Maps\n"
+                              +"Q - Quit\n"
+                              +"S – Display Splash Screen\n"
+                              ;
 
-static String icpGamepadHelp = " 1 - Satellite View\n"
+//help2 letters: B, D, F, H, J, L, N, P, R, T, V, X, Z
+final String icpKeyboardHelpRight = "F – Toggle Flyover\n"
+                              +"H - Help\n"
+                              +"P – Display XY Coords in Pixels\n"
+                              +"R - Registration Pattern\n"
+                              ;
+
+//define the help string for the gamepad
+final String icpGamepadHelp = " 1 - Satellite View\n"
                                +" 2 - Architectural Map\n"
                                +" 3 - Keepout Map\n"
                                +" 4 - POI Map\n"
@@ -124,7 +142,13 @@ public void setup()
   //fullScreen();
   
   size(1920, 1080);
-  
+
+  //display the splash screen while we do initializations
+  background(0, 0, 0);
+  splashScreen = loadImage("icp_splash_1920x1080.png");
+  image(splashScreen, 0, 0);
+  idleCounter = 0;
+
   // Initialize the ControlIO
   ioController = ControlIO.getInstance(this);
       
@@ -146,8 +170,10 @@ public void setup()
   ic.setCampusKeepOutMap("CampusKeepoutMap_1920x1080.png");
     
   //set initial mode
-  icpMode = MODE_EXPLORE;
+  icpMode = MODE_SPLASH;
   
+  //calculate the frame period in milliseconds.  This is the amount of time
+  //between automatic calls to the draw() function
   frame_period_ms = 1000.0/frameRate;
 
   /* Add POIs to the Ic object */
@@ -192,27 +218,22 @@ public void setup()
   ic.addPoi(POI_CLR_ID.AMPHITHEATER, "Amphitheater", "POIXXX");
   ic.addPoi(POI_CLR_ID.PARK, "The Park!!!", "POIXXX");
 
+  //add user-specified point POIs
   ic.processPoiFile(sketchPath("") + "data/poi/poi.txt");
         
+  //initialize keyboard velocities to 0
   key_vx = 0.0;
   key_vy = 0.0;
   
-  splashScreen = loadImage("icp_splash_1920x1080.png");
+  //load static background images for later use
   architectureDrawing = loadImage("architecture_map_1920x1080.png");
   icpHelpScreen = loadImage("icp_help.png");
   
-  background(0, 0, 0);
-  image(splashScreen, 0, 0);
-  idleCounter = 0;
-  
-  creditString = "";
-  for (int i=0; i<credits.length; i++)
-  {
-    creditString += credits[i] + "\n";
-  }
+
 }
 
 /* ======================================================================
+Function to convert a long to a color object
 ====================================================================== */
 color long2Color(long clr_long)
 {
@@ -230,34 +251,33 @@ public void draw()
   double vy = 0.0;
   Poi poi;
   
-  //stroke(0, 96, 0);
-  //strokeWeight(3);
-  //fill(255);
-
-
   switch(icpMode)
   {
     case MODE_SPLASH:
+      //display the splash screen against a black background
       background(0, 0, 0);
       image(splashScreen, 0, 0);
-      
+    
+      //add text in white
       fill(255, 255, 255);
       textSize(36);
       text("Interactive Campus Project", 20, 50);
       textSize(18);
-      text(creditString, 20, 70, 1000, 1800);  // Text wraps within text box
+      text(credits, 20, 70, 1000, 1800);  // Text wraps within text box
       textSize(30);
       text("Spelman Innovation Lab", 565, 1010);
 
-      //to do: wait a few seconds then switch modes
+      //wait for left joystick to be moved to begin
       if ((bGameControllerPresent == true) && (gamePad.getSlider("LEFT_JOY_Y").getValue() != 0))
         icpMode = MODE_EXPLORE;
       
+      //reset the idle counter while in splash mode
       idleCounter = (int)(IDLE_SECONDS * frameRate);
       
       break;
       
     case MODE_EXPLORE:
+      //this is the main operating mode
       switch (SelectedBackgroundImage)
       {
         case 0:
@@ -276,49 +296,59 @@ public void draw()
         default:
           SelectedBackgroundImage = 0;
       }
-      
+
 
       if (bGameControllerPresent == true)
       {
+        //read the joystick
         vx = 0.02 * gamePad.getSlider("LEFT_JOY_X").getValue();
         vy = 0.02 * gamePad.getSlider("LEFT_JOY_Y").getValue();
         
+        //reset the idle counter if the joystick was moved
         if (vy != 0)    //still active; reset the idle counter
           idleCounter = (int)(IDLE_SECONDS * frameRate);
 
+        //check button 6 (accelerate):  increase speed by 5 if pressed
         if (gamePad.getButton("BTN_6").pressed())
         {  
           vx *= 5;
           vy *= 5;
         }
         
+        //check button 1 (change to satellite background image)
         if (gamePad.getButton("BTN_1").pressed())
         {  
           SelectedBackgroundImage = BKGND_SATELLITE;
         }
         
+        //check button 2 (change to POI map backgroiund image)
         if (gamePad.getButton("BTN_2").pressed())
         {  
           SelectedBackgroundImage = BKGND_POI;
         }
         
+        //check button 3 (change to keepout map background image)
         if (gamePad.getButton("BTN_3").pressed())
         {  
           SelectedBackgroundImage = BKGND_KEEPOUT;
         }
         
+        //check button 4 (change to architectural background image)
         if (gamePad.getButton("BTN_4").pressed())
         {  
           SelectedBackgroundImage = BKGND_ARCHITECTURE;
         }
         
+        //check button 8 (flyover)
         ic.player.bFlyOver = gamePad.getButton("BTN_8").pressed();
         
+        //check button 9; if pressed, switch to help mode
         if (gamePad.getButton("BTN_9").pressed())
         {
           icpMode = MODE_HELP;
         }
         
+        //check button 10; if pressed, switch to help mode
         if (gamePad.getButton("BTN_10").pressed())
         {
           icpMode = MODE_HELP;
@@ -326,14 +356,17 @@ public void draw()
         
       }
       
+      //add any keyboard component to velocity that may exist
       vx += key_vx;
       vy += key_vy;
       
+      //reset keyboard velocity values
       key_vx = 0.0;
       key_vy = 0.0;
       
-      textSize(12);
-      fill(155, 155, 155);
+      //display the pixel or GIS coordinates
+      textSize(12);  //small text
+      fill(155, 155, 155);  //text will be shade of light gray
       if (bDisplayPixels == true)    //display coordinates in pixels
         text(ic.player.getLocation().format(), GIS_TEXT_X_LOCATION+10, height-20, width-GIS_TEXT_X_LOCATION, 20);  // Text wraps within text box
       else    //display GIS coordinates
@@ -341,21 +374,27 @@ public void draw()
         GisCoord g = Gis.Pixel2Gis(ic.player.getLocation());
         text(String.format("%.6f", g.latitude) + ", " + String.format("%.6f", g.longitude), GIS_TEXT_X_LOCATION+10, height-20, width-GIS_TEXT_X_LOCATION, 20);  // Text wraps within text box
       }
-      
-      //gamePad.getButton("BTN_1").pressed()
+
+      //move and re-draw the explorer
       ic.player.setVelocity(vx, vy);
       ic.player.updatePosition(frame_period_ms);
       ic.player.Draw();
       
+      //check to see if we are in proximity of one of the POIs
+      //Note the getNearbyPoi() function returns null if we are not near a POI.
+      //Otherwise, the function returns a POI object
       poi = ic.getNearbyPoi();
       if (poi != null)
       {
+        //update the name of the POI on the righthand panel
         textSize(24);
         fill(220, 220, 220);
         text(poi.name, TEXT_REGION_X+10, 10, width-TEXT_REGION_X-10, height -10);  // Text wraps within text box
         
+        //update the image for the POI on the righthand panel
         image(poi.img, TEXT_REGION_X + 10, 100, 400, 400);
         
+        //update the description of the POI on the righthand pane
         textSize(14);
         fill(220, 220, 220);
         text(poi.description, TEXT_REGION_X+10, 550, width-TEXT_REGION_X-10-10, height-550-30);  // Text wraps within text box
@@ -369,19 +408,21 @@ public void draw()
       break;
   
     case MODE_HELP:
-      background(0, 0, 0);
-      image(icpHelpScreen, 0, 0);
+      background(0, 0, 0);    //black background
+      image(icpHelpScreen, 0, 0);  //background image for help screen
       
-      fill(255, 255, 255);
+      fill(255, 255, 255);  //white letters
       textSize(18);
       text("Spelman Innovation Lab", 300, 275);
-         
+      
+      //display gamepad controller help text
       textSize(24);
       text(icpGamepadHelp, 1400, 50, 500, 600);
       
-      
-      fill(200, 170, 0);
-      text(icpKeyboardHelp, 40, 800, 1000, 200);  // Text wraps within text box
+      //print the 2 help columns
+      fill(200, 170, 0);  //shade of yellow
+      text(icpKeyboardHelpLeft, 50, 800, 400, 200);  // Text wraps within text box
+      text(icpKeyboardHelpRight, 450, 800, 400, 200);  // Text wraps within text box
       
       //after 5 minutes of idle time, return to the splash screen
       idleCounter--;
@@ -395,15 +436,17 @@ public void draw()
       break;
       
     case MODE_REGISTRATION:
+      //display the projector alignment pattern
+      //The pattern is a 40" x 30" rectangle
       final float registrationInchesWidth = 40.0;
       final float registrationInchesHeight = 30.0;
-      final int registrationPixelWidth = 1200;
-      final int registrationPixelHeight = 900;
+      final int registrationPixelWidth = 1200;    //pixels corresponding to 40" horizontally
+      final int registrationPixelHeight = 900;    //pixels corresponding to 30" vertically
       int registrationX = (width - registrationPixelWidth) / 2;
       int registrationY = (height - registrationPixelHeight) / 2;
       
-      background(0, 0, 0);
-      stroke(255, 255, 255);
+      background(0, 0, 0);  //black backgroiund
+      stroke(255, 255, 255);  //white lines
       strokeWeight(1);
       fill(0, 0, 0);
       rect(registrationX, registrationY, registrationPixelWidth, registrationPixelHeight);
@@ -421,48 +464,49 @@ public void draw()
 
 
 /* ======================================================================
+Built-in keyboard Processing callback function for keyboard key presses.
 ====================================================================== */
 void keyPressed()
 {
-  key_vx = 0.0;
-  key_vy = 0.0;
+  key_vx = 0.0;    //x-velocity from pressing left and right arrow keys
+  key_vy = 0.0;    //y-velocity from pressing up and down arrow keys
   switch (key)
   {
-    case CODED:
-      if (keyCode == ESC)
+    case CODED:    //coded keys
+      if (keyCode == ESC)    //quit
         icpMode = MODE_QUIT;
-      if (keyCode == UP)
+      if (keyCode == UP)      //move explorer up (decrease vy)
         key_vy = -0.1;
-      if (keyCode == DOWN)
+      if (keyCode == DOWN)    //move explorer down (increase vy)
         key_vy = +0.1;
-      if (keyCode == LEFT)
+      if (keyCode == LEFT)    //move explorer left (decrease vx)
         key_vx = -0.1;
-      if (keyCode == RIGHT)
+      if (keyCode == RIGHT)   //move explorer right (increase vx)
         key_vx = +0.1;       
       break;    //case CODED
     
-    case 'g':  //display GIS coordinates
+    case 'g':  //display GIS coordinates; use 'P' to display pixels
       bDisplayPixels = false;
       break;
       
-    case 'p':  //display coordinates in pixels
+    case 'p':  //display coordinates in pixels; use 'G' to display GIS coordinates
       bDisplayPixels = true;
       break;
       
-    case 'q':
+    case 'q':  //quit
     case 'Q':
       icpMode = MODE_QUIT;
       break;
     
-    case 'r':
+    case 'r':    //display projector registration pattern
       icpMode = MODE_REGISTRATION;
       break;
       
-    case 's':
+    case 's':    //display the splash screen
       icpMode = MODE_SPLASH;
       break;
       
-    case 'e':
+    case 'e':    //enter campus exploring mode
       icpMode = MODE_EXPLORE;
       break;
       

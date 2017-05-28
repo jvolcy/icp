@@ -59,6 +59,7 @@ public class Actor
     }
 
   /* ======================================================================
+  set the bounds of the allowable position for the actor
   ====================================================================== */
     public void setBorders(int left, int top, int width, int height)
     {
@@ -74,6 +75,12 @@ public class Actor
 
 
   /* ======================================================================
+  Function to set the 4 border policies.
+  The border policy specifies what happes to the actor when it reaches
+  one of the border.  Allowable policies include
+  Actor.BORDER_POLICY_NONE --> no policy at the screen border
+  Actor.BORDER_POLICY_WRAP --> wrap around to the other side of the screen
+  Actor.BORDER_POLICY_CLIP --> do not go outside the borders of the screen 
   ====================================================================== */
   public void setBorderPolicies(int leftPolicy, 
       int rightPolicy, int topPolicy, 
@@ -86,6 +93,7 @@ public class Actor
   }
 
   /* ======================================================================
+  getLocation() returns the actor's location as a Vect2 object
   ====================================================================== */
   public Vect2 getLocation()
   {
@@ -93,6 +101,9 @@ public class Actor
   }
   
   /* ======================================================================
+  setLocation() sets the actor's location from a Vect2 object.
+  The function is respectful of the border policy and behaves according
+  to the border policy in place when invoked.
   ====================================================================== */
   public void setLocation(Vect2 v)
   {
@@ -130,6 +141,9 @@ public class Actor
   }
   
   /* ======================================================================
+  getHeading() returns the heading of the actor.  This is useful mostly
+  when we have a non-zero acceleration.  The function returns a Vect2
+  (unit vector) ojbect.
   ====================================================================== */
   public Vect2 getHeading()
   {
@@ -137,6 +151,8 @@ public class Actor
   }
   
   /* ======================================================================
+  setHeading() sets the actor's heading.  The function expects a Vect2
+  object.
   ====================================================================== */
   public void setHeading(Vect2 v)
   {
@@ -145,6 +161,7 @@ public class Actor
   }
   
   /* ======================================================================
+  getVelocity() - returns the actors velocity as a Vect2 object
   ====================================================================== */
   public Vect2 getVeolociy()
   {
@@ -152,6 +169,8 @@ public class Actor
   }
   
   /* ======================================================================
+  setVelocity() sets the actor's velocity from an X (vx) and Y (vy)
+  component pair.
   ====================================================================== */
   public void setVelocity(double vx, double vy)
   {
@@ -159,6 +178,7 @@ public class Actor
   }
   
   /* ======================================================================
+  setVelocity() sets the actor's velocity from a Vect2 object
   ====================================================================== */
   public void setVelocity(Vect2 v)
   {
@@ -177,6 +197,8 @@ public class Actor
   }
 
   /* ======================================================================
+  getAcceleration() returns the actor's acceleration vector as a Vect2
+  object
   ====================================================================== */
   public Vect2 getAcceleration()
   {
@@ -184,6 +206,8 @@ public class Actor
   }
   
   /* ======================================================================
+  setAcceleratin() sets the actor's acceleration vector from a Vect2
+  object
   ====================================================================== */
   public void setAcceleration(Vect2 v)
   {
@@ -216,6 +240,8 @@ public class Actor
   
   
   /* ======================================================================
+  The Draw() function causes the actor to draw itself onto the screen at
+  its current x and y location.
   ====================================================================== */
   public void Draw()
   {

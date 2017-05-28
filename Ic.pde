@@ -113,6 +113,7 @@ public class Ic
   {
     BufferedReader br = null;
     String strLine = "";
+    //reserved range of 4096 POI IDs: 0xaaa000 to 0xaaafff
     long baseReservedPoiID = (long)(#aaa000);
     
     try
@@ -120,7 +121,7 @@ public class Ic
           br = new BufferedReader( new FileReader(filename) );
           while( (strLine = br.readLine()) != null)
           {
-                  String args[];    //array to hole split strLine
+                  String args[];    //array to hold split strLine
                   args = strLine.split(":");
                   strLine = strLine.trim();
                   if (strLine.length() == 0)
