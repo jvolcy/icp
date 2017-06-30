@@ -1,5 +1,5 @@
 import org.gamecontrolplus.*;
-import java.util.Map;
+//import java.util.Map;
 import java.util.Iterator;
 
 /* ======================================================================
@@ -139,9 +139,9 @@ final String icpGamepadHelp = " 1 - Satellite View\n"
 public void setup() 
 {
   //must match ICP.SCREEN_WIDTH and ICP.SCREEN_HEIGHT
-  //fullScreen();
+  fullScreen();
   
-  size(1920, 1080);
+  //size(1920, 1080);
 
   //display the splash screen while we do initializations
   background(0, 0, 0);
@@ -439,9 +439,9 @@ public void draw()
       //display the projector alignment pattern
       //The pattern is a 40" x 30" rectangle
       final float registrationInchesWidth = 40.0;
-      final float registrationInchesHeight = 30.0;
-      final int registrationPixelWidth = 1200;    //pixels corresponding to 40" horizontally
-      final int registrationPixelHeight = 900;    //pixels corresponding to 30" vertically
+      final float registrationInchesHeight = 23.0;
+      final int registrationPixelWidth = 1744;    //pixels corresponding to 40" horizontally
+      final int registrationPixelHeight = 1004;    //pixels corresponding to 23" vertically
       int registrationX = (width - registrationPixelWidth) / 2;
       int registrationY = (height - registrationPixelHeight) / 2;
       
